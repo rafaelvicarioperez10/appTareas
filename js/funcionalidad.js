@@ -40,11 +40,21 @@ function mostrarTareas() {
     const tareas = obtenerTareas();
 
     lista.replaceChildren();
+    if (tareas.length === 0) {
+        const mensaje = document.createElement("p");
+        mensaje.textContent = "No hay tareas pendientes";
+        lista.appendChild(mensaje);
+        return;
+    }
 
     tareas.forEach((tarea, indice) => {
         const li = document.createElement("li");
         const contenido = document.createElement("span");
-        contenido.textContent = tarea.texto + " - " + tarea.fecha;
+        contenido.textContent = tarea.texto + " - ";
+
+        const fecha = document.createElement("strong");
+        fecha.textContent = tarea.fecha;
+        contenido.appendChild(fecha);
 
         const botonEliminar = document.createElement("button");
         botonEliminar.textContent = "Eliminar";
