@@ -77,8 +77,8 @@ function mostrarTareas() {
         botonEliminar.classList.add("boton-tarea");
 
         botonEditar.addEventListener("click", () => {
-            const cajaEdicion = document.createElement("input");
-            cajaEdicion.type = "text";
+            const cajaEdicion = document.createElement("textarea");
+
             cajaEdicion.value = tarea.texto;
 
             const botonesEdicion = document.createElement("div");
