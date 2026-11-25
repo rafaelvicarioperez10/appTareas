@@ -21,9 +21,16 @@ function claveTareas() {
 function cargarUsuario() {
     const usuario = obtenerUsuario();
 
-    document.getElementById("mensaje").textContent =
-        "Hola " + usuario + ", las tareas son:";
+    const mensaje = document.getElementById("mensaje");
 
+    mensaje.replaceChildren(
+        "Hola ",
+        Object.assign(document.createElement("span"), {
+            className: "nombre-usuario",
+            textContent: usuario
+        }),
+        ", las tareas son:"
+    );
     mostrarTareas();
 }
 
@@ -40,6 +47,7 @@ function mostrarTareas() {
     const tareas = obtenerTareas();
 
     lista.replaceChildren();
+
     if (tareas.length === 0) {
         const mensaje = document.createElement("p");
         mensaje.textContent = "No hay tareas pendientes";
@@ -49,6 +57,7 @@ function mostrarTareas() {
 
     tareas.forEach((tarea, indice) => {
         const li = document.createElement("li");
+
         const contenido = document.createElement("span");
         contenido.textContent = tarea.texto + " - ";
 
@@ -56,8 +65,56 @@ function mostrarTareas() {
         fecha.textContent = tarea.fecha;
         contenido.appendChild(fecha);
 
+        const botones = document.createElement("div");
+        botones.classList.add("botones-tarea");
+
+        const botonEditar = document.createElement("button");
+        botonEditar.textContent = "Editar";
+        botonEditar.classList.add("boton-tarea");
+
         const botonEliminar = document.createElement("button");
         botonEliminar.textContent = "Eliminar";
+        botonEliminar.classList.add("boton-tarea");
+
+        botonEditar.addEventListener("click", () => {
+            const cajaEdicion = document.createElement("input");
+            cajaEdicion.type = "text";
+            cajaEdicion.value = tarea.texto;
+
+            const botonesEdicion = document.createElement("div");
+            botonesEdicion.classList.add("botones-tarea");
+
+            const botonGuardar = document.createElement("button");
+            botonGuardar.textContent = "Guardar";
+            botonGuardar.classList.add("boton-tarea");
+
+            const botonCancelar = document.createElement("button");
+            botonCancelar.textContent = "Cancelar";
+            botonCancelar.classList.add("boton-tarea");
+
+            botonesEdicion.append(botonGuardar, botonCancelar);
+            li.replaceChildren(cajaEdicion, botonesEdicion);
+            cajaEdicion.focus();
+
+            botonGuardar.addEventListener("click", () => {
+                const textoNuevo = cajaEdicion.value.trim();
+
+                if (textoNuevo === "") {
+                    cajaEdicion.focus();
+                    return;
+                }
+
+                const tareasActualizadas = obtenerTareas();
+                tareasActualizadas[indice].texto = textoNuevo;
+                tareasActualizadas[indice].fecha = new Date().toLocaleString();
+
+                guardarTareas(tareasActualizadas);
+                mostrarTareas();
+            });
+
+            botonCancelar.addEventListener("click", mostrarTareas);
+        });
+
         botonEliminar.addEventListener("click", () => {
             const tareasActualizadas = obtenerTareas();
             tareasActualizadas.splice(indice, 1);
@@ -65,10 +122,13 @@ function mostrarTareas() {
             mostrarTareas();
         });
 
-        li.append(contenido, botonEliminar);
+        botones.append(botonEditar, botonEliminar);
+        li.append(contenido, botones);
         lista.appendChild(li);
     });
 }
+
+
 function agregarTarea() {
 
     const cajaTarea = document.getElementById("tarea");
